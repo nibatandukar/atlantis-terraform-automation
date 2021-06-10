@@ -1,0 +1,64 @@
+resource "aws_instance" "EC2" {
+  availability_zone = "ap-south-1a"
+  ami = "ami-081c93e64252e1b27"
+  vpc_security_group_ids = [aws_security_group.allow_tls.id]
+  instance_type = "t2.micro"
+  key_name = "deployer-key"
+  tags = {
+    Name = "EC2_Instance_Terraform"
+    }
+}
+
+resource "aws_ebs_volume" "EC2-EBS" {
+  availability_zone = "ap-south-1a"
+  size              = 8
+
+  tags = {
+    Name = "EC2-EBS"
+  }
+}
+
+resource "aws_volume_attachment" "ebs_att" {
+  device_name = "/dev/sdh"
+  volume_id   = aws_ebs_volume.EC2-EBS.id
+  instance_id = aws_instance.EC2.id
+}
+
+resource "aws_key_pair" "deployer" {
+  key_name   = "deployer-key"
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDJDa/Qo0L6dTwgXUzSoFLRW8WBuEVtKJbamqo26j9GsQ9NvR65x1BLgsMfGdaBDG51SK42dgyeBGj0YYhIAmtLDw5PjR1enX2XA4EaYoSrJB5h449HpG3E9MlUlU8f+JWmggNx9yJ7mu0fre69+/dtjbVrqtNWclGeGz9ITrKdGcUy7Ck4OQT9paLF2ut6W1q1/OPCMS6FIeY5A1zQtncw5+utCZ+sbTZVkZ976JdglJKZ1CIDwIy5LrT1sV4J7jxNP36V3/xS3F+dgwIxOG3Yxpl6rAe4WVDSAq8Bq1Tp+HGw4F3NreYBUB9zwPKvBkC7vvueSz6G+CqPcCwLT/nI8Kp0arDW4pYBEb/W6gYRkkmBzMPNGqJO1zNVJ45uojlwGej2diIHdCBqFW6YV+M3WpMxt0KD6yiH3jEmeNP5x0ZT4EqZvus5p4ZSU086oSpQs7oQNGR+8PvHVLY8fCUgA2iv1G7z129eUo/SraWtcqTkegLL+eJZrx7zpMwbK4s= niba@niba-Inspiron-3543"
+}
+
+resource "aws_security_group" "allow_tls" {
+  name        = "allow_tls"
+  description = "Allow TLS inbound traffic"
+  #vpc_id      = aws_vpc.main.id
+
+  ingress {
+    description      = "TLS from VPC"
+    from_port        = 443
+    to_port          = 443
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+ ingress {
+    description      = "TLS from VPC"
+    from_port        = 22
+    to_port          = 22
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "allow_tls"
+  }
+}
+

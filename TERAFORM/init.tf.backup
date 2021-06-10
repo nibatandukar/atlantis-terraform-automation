@@ -1,0 +1,11 @@
+data "template_file" "client" {
+  template = filemd5("/home/niba/Downloads/HIDS/SiteContent/django1.sh")
+}
+data "template_cloudinit_config" "config" {
+  gzip          = false
+  base64_encode = false
+  part {
+    content_type = "text/x-shellscript"
+    content      = data.template_file.client.rendered
+  }
+}

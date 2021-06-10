@@ -1,0 +1,13 @@
+#!/bin/bash
+
+touch /var/log/django.log
+ln -sf /proc/1/fd/1 /var/log/django.log
+#apt install net-tools
+apt update
+apt install net-tools
+echo "Y" | apt install python3-pip
+git clone https://gitlab.com/nibatandukar/nomisma.git
+cd nomisma
+pip3 install -r requirements.txt
+python3 manage.py runserver 0.0.0.0:80 >> /var/log/django.log
+
