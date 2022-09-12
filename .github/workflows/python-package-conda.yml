@@ -46,7 +46,7 @@ jobs:
     needs: [DeployStaging]
     runs-on: ubuntu-latest
     environment: 
-      name: test
+      name: test1
       url: 'http://www.myapp.com'
     steps:
       - name: Deploy
