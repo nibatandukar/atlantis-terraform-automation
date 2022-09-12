@@ -12,6 +12,10 @@ jobs:
   Build:
     runs-on: ubuntu-latest
     steps:
+      - uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ github.TOKEN }}
+          approvers: nibatandukar
       - uses: actions/checkout@v2
 
       - name: Compile
